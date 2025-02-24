@@ -11,22 +11,23 @@ import (
 )
 
 func (k msgServer) CreateResource(goCtx context.Context, msg *types.MsgCreateResource) (*types.MsgCreateResourceResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+        ctx := sdk.UnwrapSDKContext(goCtx)
 
-	var resource = types.Resource{
-		Creator: msg.Creator,
-		Name:    msg.Name,
-		Data:    msg.Data,
-	}
+        // Consensus-breaking change: Append "_v2" to the resource Name
+        var resource = types.Resource{
+                Creator:     msg.Creator,
+                Name:        msg.Name + "_v2", // Breaking change: Alter the Name before storing
+                Description: msg.Description,
+        }
 
-	id := k.AppendResource(
-		ctx,
-		resource,
-	)
+        id := k.AppendResource(
+                ctx,
+                resource,
+        )
 
-	return &types.MsgCreateResourceResponse{
-		Id: id,
-	}, nil
+        return &types.MsgCreateResourceResponse{
+                Id: id,
+        }, nil
 }
 
 func (k msgServer) UpdateResource(goCtx context.Context, msg *types.MsgUpdateResource) (*types.MsgUpdateResourceResponse, error) {
