@@ -23,7 +23,19 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgCreateResource = "op_weight_msg_resource"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateResource int = 100
+
+	opWeightMsgUpdateResource = "op_weight_msg_resource"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateResource int = 100
+
+	opWeightMsgDeleteResource = "op_weight_msg_resource"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteResource int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -34,6 +46,17 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	blockchainGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
+		ResourceList: []types.Resource{
+			{
+				Id:      0,
+				Creator: sample.AccAddress(),
+			},
+			{
+				Id:      1,
+				Creator: sample.AccAddress(),
+			},
+		},
+		ResourceCount: 2,
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&blockchainGenesis)
@@ -46,6 +69,39 @@ func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
+	var weightMsgCreateResource int
+	simState.AppParams.GetOrGenerate(opWeightMsgCreateResource, &weightMsgCreateResource, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateResource = defaultWeightMsgCreateResource
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateResource,
+		blockchainsimulation.SimulateMsgCreateResource(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateResource int
+	simState.AppParams.GetOrGenerate(opWeightMsgUpdateResource, &weightMsgUpdateResource, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateResource = defaultWeightMsgUpdateResource
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateResource,
+		blockchainsimulation.SimulateMsgUpdateResource(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteResource int
+	simState.AppParams.GetOrGenerate(opWeightMsgDeleteResource, &weightMsgDeleteResource, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteResource = defaultWeightMsgDeleteResource
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteResource,
+		blockchainsimulation.SimulateMsgDeleteResource(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -54,6 +110,30 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 // ProposalMsgs returns msgs used for governance proposals for simulations.
 func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
 	return []simtypes.WeightedProposalMsg{
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgCreateResource,
+			defaultWeightMsgCreateResource,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				blockchainsimulation.SimulateMsgCreateResource(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgUpdateResource,
+			defaultWeightMsgUpdateResource,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				blockchainsimulation.SimulateMsgUpdateResource(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgDeleteResource,
+			defaultWeightMsgDeleteResource,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				blockchainsimulation.SimulateMsgDeleteResource(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
 		// this line is used by starport scaffolding # simapp/module/OpMsg
 	}
 }

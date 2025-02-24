@@ -1,0 +1,11 @@
+syntax = "proto3";
+package blockchain.blockchain;
+
+option go_package = "github.com/LiHaixin000/blockchain/x/blockchain/types";
+
+message Resource {
+  uint64 id = 1;
+  string name = 2; 
+  string data = 3; 
+  string creator = 4;
+}

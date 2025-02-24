@@ -1,17 +1,20 @@
 syntax = "proto3";
+
 package blockchain.blockchain;
 
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 import "blockchain/blockchain/params.proto";
+import "blockchain/blockchain/resource.proto";
 
 option go_package = "github.com/LiHaixin000/blockchain/x/blockchain/types";
 
 // GenesisState defines the blockchain module's genesis state.
 message GenesisState {
+  
   // params defines all the parameters of the module.
-  Params params = 1 [
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
+           Params   params        = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  repeated Resource resourceList  = 2 [(gogoproto.nullable) = false] ;
+           uint64   resourceCount = 3;
 }
+

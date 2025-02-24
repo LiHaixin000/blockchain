@@ -17,6 +17,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Use:       "params",
 					Short:     "Shows the parameters of the module",
 				},
+				{
+					RpcMethod: "ResourceAll",
+					Use:       "list-resource",
+					Short:     "List all resource",
+				},
+				{
+					RpcMethod:      "Resource",
+					Use:            "show-resource [id]",
+					Short:          "Shows a resource by id",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+				},
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},
@@ -27,6 +38,24 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				{
 					RpcMethod: "UpdateParams",
 					Skip:      true, // skipped because authority gated
+				},
+				{
+					RpcMethod:      "CreateResource",
+					Use:            "create-resource [name] [data]",
+					Short:          "Create resource",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "name"}, {ProtoField: "data"}},
+				},
+				{
+					RpcMethod:      "UpdateResource",
+					Use:            "update-resource [id] [name] [data]",
+					Short:          "Update resource",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}, {ProtoField: "name"}, {ProtoField: "data"}},
+				},
+				{
+					RpcMethod:      "DeleteResource",
+					Use:            "delete-resource [id]",
+					Short:          "Delete resource",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
 				},
 				// this line is used by ignite scaffolding # autocli/tx
 			},
